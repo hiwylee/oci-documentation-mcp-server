@@ -17,6 +17,8 @@ import re
 import sys
 from googlesearch import search
 
+from ddgs import DDGS
+
 # Import models
 from oci_documentation_mcp_server.models import (
     SearchResult,
@@ -132,15 +134,16 @@ async def search_documentation(
     Returns:
         List of search results with URLs, titles, and context snippets
     """
-    logger.error(f'Searching OCI documentation for: {search_phrase}')
+    logger.error(f'Searching OCI documentation for ### : {search_phrase}')
 
     try:
-        response = search(
-            f"{search_phrase} site:docs.oracle.com", 
-             advanced=True, 
-             num_results=limit
-             )
-        
+        # response = search(
+        #     f"{search_phrase} site:docs.oracle.com", 
+        #      advanced=True, 
+        #      num_results=limit
+        #      )
+        ddgs = DDGS()
+        response = ddgs.text(f"{search_phrase} site:docs.oracle.com", max_results=limit)
     except Exception as e:
         error_msg = f'Error searching OCI docs: {str(e)}'
         logger.error(error_msg)
@@ -149,14 +152,16 @@ async def search_documentation(
 
     results = []
     if response:
-        for i in response:
+                    
+        for i, result in enumerate(response):
             results.append(
                 SearchResult(
-                    title=i.title,
-                    url=i.url,
-                    description=i.description
+                    title=result['title'],
+                    url=result['href'],
+                    description=result['body']
                 )
             )
+
 
     logger.debug(f'Found {len(results)} search results for: {search_phrase}')
     return results
