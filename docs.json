@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+      "oci-documentation-mcp-server": {
+        "command": "/home/opc/oci-documentation-mcp-server/.venv/bin/python",
+        "args": [
+          "-m",
+          "oci_documentation_mcp_server.server"
+        ],
+        "cwd": "/home/opc/oci-documentation-mcp-server",
+        "env": {
+          "FASTMCP_LOG_LEVEL": "ERROR"
+        },
+        "disabled": false,
+        "autoApprove": []
+    }
+  }
+}
+
