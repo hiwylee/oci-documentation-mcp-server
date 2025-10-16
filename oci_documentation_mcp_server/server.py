@@ -16,6 +16,7 @@ import os
 import re
 import sys
 from googlesearch import search
+from fastapi import FastAPI       # ✅ 추가
 
 from ddgs import DDGS
 
@@ -58,7 +59,7 @@ DEFAULT_HEADERS = {
 #     "snippet": "true"
 #     }
 
-
+app = FastAPI()
 mcp = FastMCP(
     'oci-documentation-mcp-server',
     instructions="""
@@ -89,9 +90,11 @@ mcp = FastMCP(
         'beautifulsoup4',
         'googlesearch-python'
     ],
+    port = 8090,
+    host='0.0.0.0',
 )
 
-
+mcp.mount_to_fastapi(app)
 
 @mcp.tool()
 async def search_documentation(
@@ -297,8 +300,14 @@ def main():
         mcp.run(transport='sse')
     else:
         logger.info('Using standard stdio transport')
-        mcp.run()
+        mcp.run(transport='streamable-http')
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
+
+
+# expose to external clients
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8090)
